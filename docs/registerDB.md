@@ -101,5 +101,8 @@ func main() {
 	orm.RunSyncdb("default", false, true)
 	beego.Run()
 }
-
 ```
+
+## sqlite可视化
+
+[DB Browser for SQLite 官网](https://sqlitebrowser.org/)

@@ -2,3 +2,4 @@
 - [首页](home.md)
 - [登录与退出](login.md)
 - [数据库初始化](registerDB.md)
+- [分类](category.md)

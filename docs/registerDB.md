@@ -11,6 +11,8 @@ go get github.com/mattn/go-sqlite3
 
 在 `models` 目录下创建 `models.go` 文件
 ``` go
+// models/models.go
+
 package models
 
 import (
@@ -83,6 +85,8 @@ func RegisterDB() {
 在 `main.go` 文件中添加注册、创建、启动数据库操作
 
 ``` go
+// main.go
+
 package main
 
 import (

@@ -12,4 +12,5 @@ func init() {
 	// 参数2：控制器(controller)
 	beego.Router("/", &controllers.HomeController{})
 	beego.Router("/login", &controllers.LoginController{})
+	beego.Router("/category", &controllers.CategoryController{})
 }

@@ -3,6 +3,7 @@ package models
 import (
 	"os"
 	"path"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -61,4 +62,77 @@ func RegisterDB() {
 	// 注册默认数据库
 	// orm必须注册一个别名为 `default` 的数据库，作为默认使用
 	orm.RegisterDataBase("default", _SQLITE3_DRIVER, _DB_NAME, 10)
+}
+
+// 创建分类
+func AddCategory(name string) error {
+	// 创建一个orm模型
+	o := orm.NewOrm()
+
+	// 创建一个分类
+	cate := &Category{
+		Title:     name,
+		Created:   time.Now(),
+		TopicTime: time.Now(),
+	}
+
+	// 获取 `category` 表
+	qs := o.QueryTable("category")
+	// 查看表中是否已经存在相同分类
+	err := qs.Filter("title", name).One(cate)
+
+	// 如果没有err，就代表已经存在相同分类，return nil 即可
+	if err == nil {
+		return err
+	}
+
+	// 向表中拆入一个分类
+	_, err = o.Insert(cate)
+
+	// 如果err != nil ，就代表插入失败了，return err
+	if err != nil {
+		return err
+	}
+
+	// 成功插入，return nil
+	return nil
+}
+
+// 删除分类
+func DelCategory(id string) error {
+	//将id 转化为 int64
+	cid, err := strconv.ParseInt(id, 10, 64)
+
+	// 转化失败，return err
+	if err != nil {
+		return err
+	}
+
+	// 创建一个orm模型
+	o := orm.NewOrm()
+
+	// 构造一个分类
+	cate := &Category{Id: cid}
+
+	// 删除相同id的分类
+	_, err = o.Delete(cate)
+
+	// 删除失败，return err
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// 获取列表
+func GetCategoryList() ([]*Category, error) {
+	// 创建一个orm模型
+	o := orm.NewOrm()
+	// 创建一个 `Category` 切片
+	cates := make([]*Category, 0)
+	// 获取 `category` 表
+	qs := o.QueryTable("category")
+	// 获取所有数据
+	_, err := qs.All(&cates)
+	return cates, err
 }

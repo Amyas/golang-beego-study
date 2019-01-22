@@ -1,5 +1,12 @@
 我们接下来就要开始实现分类以及文章模块啦。在开始前呢，我们先关联、创建数据库。方便我们后续操作。
 
+
+* 我们使用 [go-sqlite3](https://github.com/mattn/go-sqlite3) 为本次数据库
+go-sqlite3 安装：
+``` bash
+go get github.com/mattn/go-sqlite3
+```
+
 ## 模型创建
 
 在 `models` 目录下创建 `models.go` 文件
@@ -12,6 +19,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
+	// _ 代表只执行 `go-sqlite3` 的 init 方法
 	_ "github.com/mattn/go-sqlite3"
 )
 

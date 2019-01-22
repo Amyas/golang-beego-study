@@ -1,3 +1,4 @@
 - [创建项目](install.md)
 - [首页](home.md)
 - [登录与退出](login.md)
+- [数据库初始化](registerDB.md)

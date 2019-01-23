@@ -233,5 +233,58 @@ func DelTopic(id string) error {
 ```
 
 ## 查看文章
+``` html
+<!-- views/topic_view.html -->
+
+...
+{{template "header"}}
+  <title>{{.Topic.Title}} - 我的 beego 博客</title>
+</head>
+<body>
+
+  {{template "nav" .}}
+
+  <div class="container" style="margin-top:50px;">
+    <h1>{{.Topic.Title}}</h1>
+    <div>{{.Topic.Content}}</div>
+  </div>
+  
+{{template "footer"}}
+```
+
+``` go
+// controllers/topic.go
+
+...
+func (this *TopicController) View() {
+	this.Data["IsLogin"] = checkAccount(this.Controller)
+	this.Data["IsTopic"] = true
+	this.TplName = "topic_view.html"
+
+	var err error
+	this.Data["Topic"], err = models.GetTopic(this.Ctx.Input.Param("0"))
+	if err != nil {
+		beego.Error(err)
+	}
+}
+```
+
+``` go
+// models/models.go
+
+...
+func GetTopic(id string) (*Topic, error) {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+
+	qs := o.QueryTable("topic")
+	err = qs.Filter("title", tid).One(topic)
+	return topic, err
+}
+```
 
 ## 编辑文章

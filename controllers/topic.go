@@ -55,3 +55,15 @@ func (this *TopicController) Delete() {
 
 	this.Redirect("/topic", 301)
 }
+
+func (this *TopicController) View() {
+	this.Data["IsLogin"] = checkAccount(this.Controller)
+	this.Data["IsTopic"] = true
+	this.TplName = "topic_view.html"
+
+	var err error
+	this.Data["Topic"], err = models.GetTopic(this.Ctx.Input.Param("0"))
+	if err != nil {
+		beego.Error(err)
+	}
+}

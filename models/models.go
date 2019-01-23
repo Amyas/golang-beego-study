@@ -174,3 +174,17 @@ func GetTopicList() ([]*Topic, error) {
 	_, err := qs.All(&topics)
 	return topics, err
 }
+
+// 获取文章
+func GetTopic(id string) (*Topic, error) {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+
+	qs := o.QueryTable("topic")
+	err = qs.Filter("title", tid).One(topic)
+	return topic, err
+}

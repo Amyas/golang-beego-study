@@ -181,6 +181,56 @@ func GetTopicList() ([]*Topic, error) {
 ```
 
 ## 删除文章
+``` html
+<!-- views/topic.html -->
+
+...
+<tbody>
+  ...
+    <th>
+      <a href="/topic/delete/{{.Id}}">删除</a>
+    </th>
+  ...
+</tbody>
+...
+```
+
+``` go
+// controllers/topic.go
+
+...
+func (this *TopicController) Delete() {
+	// 获取id
+	// 我们在 `topic.html` 中的删除按钮地址为： `/topic/delete/{{.Id}}`
+	// 获取delete后面的参数方法为：`this.Ctx.Input.Param("key")`
+	id := this.Ctx.Input.Param("0")
+
+	err := models.DelTopic(id)
+	if err != nil {
+		beego.Error(err)
+	}
+
+	this.Redirect("/topic", 301)
+}
+...
+```
+
+``` go
+// models/models.go
+
+...
+func DelTopic(id string) error {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+	_, err = o.Delete(topic)
+	return err
+}
+```
 
 ## 查看文章
 

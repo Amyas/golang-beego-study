@@ -41,3 +41,17 @@ func (this *TopicController) Add() {
 	this.Data["IsTopic"] = true
 	this.TplName = "topic_add.html"
 }
+
+func (this *TopicController) Delete() {
+	// 获取id
+	// 我们在 `topic.html` 中的删除按钮地址为： `/topic/delete/{{.Id}}`
+	// 获取delete后面的参数方法为：`this.Ctx.Input.Param("key")`
+	id := this.Ctx.Input.Param("0")
+
+	err := models.DelTopic(id)
+	if err != nil {
+		beego.Error(err)
+	}
+
+	this.Redirect("/topic", 301)
+}

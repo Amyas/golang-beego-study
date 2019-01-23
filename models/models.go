@@ -140,6 +140,19 @@ func DelCategory(id string) error {
 	return nil
 }
 
+// 删除文章
+func DelTopic(id string) error {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+	_, err = o.Delete(topic)
+	return err
+}
+
 // 获取分类列表
 func GetCategoryList() ([]*Category, error) {
 	// 创建一个orm模型

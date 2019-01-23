@@ -24,7 +24,9 @@
         {{range .TopicList}}
         <tr>
           <th>{{.Id}}</th>
-          <th>{{.Title}}</th>
+          <th>
+            <a href="/topic/view/{{.Id}}">{{.Title}}</a>
+          </th>
           <th>{{.Content}}</th>
           <th>{{.Created}}</th>
           <th>{{.Updated}}</th>

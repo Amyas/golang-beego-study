@@ -182,9 +182,39 @@ func GetTopic(id string) (*Topic, error) {
 		return nil, err
 	}
 	o := orm.NewOrm()
-	topic := &Topic{Id: tid}
+	topic := &Topic{}
 
 	qs := o.QueryTable("topic")
-	err = qs.Filter("title", tid).One(topic)
+	err = qs.Filter("id", tid).One(topic)
+	if err != nil {
+		return nil, err
+	}
+	topic.Views++
+	_, err = o.Update(topic)
 	return topic, err
+}
+
+// 编辑文航
+func EditTopic(id, title, content string) error {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+
+	// 查看表中会否存在当前文章
+	err = o.Read(topic)
+	// 不存在就 return
+	if err != nil {
+		return err
+	}
+
+	// 存在该文章，更新数据
+	topic.Title = title
+	topic.Content = content
+	topic.Updated = time.Now()
+	_, err = o.Update(topic)
+	return err
 }

@@ -234,6 +234,18 @@ func DelTopic(id string) error {
 
 ## 查看文章
 ``` html
+<!-- views/topic.html -->
+
+...
+<th>{{.Id}}</th>
+<th>
+	<a href="/topic/view/{{.Id}}">{{.Title}}</a>
+</th>
+<th>{{.Content}}</th>
+...
+```
+
+``` html
 <!-- views/topic_view.html -->
 
 ...
@@ -279,12 +291,120 @@ func GetTopic(id string) (*Topic, error) {
 		return nil, err
 	}
 	o := orm.NewOrm()
-	topic := &Topic{Id: tid}
+	topic := &Topic{}
 
 	qs := o.QueryTable("topic")
-	err = qs.Filter("title", tid).One(topic)
+	err = qs.Filter("id", tid).One(topic)
+	if err != nil {
+		return nil, err
+	}
+	topic.Views++
+	_, err = o.Update(topic)
 	return topic, err
 }
 ```
 
 ## 编辑文章
+
+``` html
+<!-- views/topic_view.html -->
+
+...
+<div class="container" style="margin-top:50px;">
+	<h1>{{.Topic.Title}}</h1>
+	<a href="/topic/edit/{{.Topic.Id}}" class="btn btn-default">编辑文章</a>
+	<div>{{.Topic.Content}}</div>
+</div>
+...
+```
+
+``` html
+<!-- views/topic_edit.html -->
+
+{{template "header"}}
+  <title>编辑文章 - 我的 beego 博客</title>
+</head>
+<body>
+
+  {{template "nav" .}}
+
+  <div class="container" style="margin-top:50px;">
+    <h1>编辑文章</h1>
+    <form method="POST" action="/topic">
+      <input type="hidden" name="id" value="{{.Topic.Id}}">
+      <div class="form-group">
+        <label>文章名称</label>
+        <input type="text" name="title" class="form-control" value="{{.Topic.Title}}">
+      </div>
+      <div class="form-group">
+        <label>文章内容</label>
+        <textarea name="content" cols="30" rows="10" class="form-control">{{.Topic.Content}}</textarea>
+      </div>
+      <button class="btn btn-primary">编辑文章</button>
+    </form>
+  </div>
+  
+{{template "footer"}}
+```
+
+``` go
+// controllers/topic.go
+
+...
+func (this *TopicController) Post() {
+	...
+
+	id := input.Get("id")
+	...
+
+	var err error
+	if len(id) != 0 {
+		err = models.EditTopic(id, title, content)
+	} else {
+		err = models.AddTopic(title, content)
+	}
+	...
+}
+
+...
+func (this *TopicController) Edit() {
+	this.Data["IsLogin"] = checkAccount(this.Controller)
+	this.Data["IsTopic"] = true
+	this.TplName = "topic_edit.html"
+
+	var err error
+	this.Data["Topic"], err = models.GetTopic(this.Ctx.Input.Param("0"))
+	if err != nil {
+		beego.Error(err)
+	}
+}
+```
+
+``` go
+// models/models.go
+
+...
+func EditTopic(id, title, content string) error {
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	o := orm.NewOrm()
+	topic := &Topic{Id: tid}
+
+	// 查看表中会否存在当前文章
+	err = o.Read(topic)
+	// 不存在就 return
+	if err != nil {
+		return err
+	}
+
+	// 存在该文章，更新数据
+	topic.Title = title
+	topic.Content = content
+	topic.Updated = time.Now()
+	_, err = o.Update(topic)
+	return err
+}
+```

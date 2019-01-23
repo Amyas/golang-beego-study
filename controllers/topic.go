@@ -25,10 +25,17 @@ func (this *TopicController) Get() {
 func (this *TopicController) Post() {
 	input := this.Input()
 
+	id := input.Get("id")
 	title := input.Get("title")
 	content := input.Get("content")
 
-	err := models.AddTopic(title, content)
+	var err error
+	if len(id) != 0 {
+		err = models.EditTopic(id, title, content)
+	} else {
+		err = models.AddTopic(title, content)
+	}
+
 	if err != nil {
 		beego.Error(err)
 	}
@@ -60,6 +67,18 @@ func (this *TopicController) View() {
 	this.Data["IsLogin"] = checkAccount(this.Controller)
 	this.Data["IsTopic"] = true
 	this.TplName = "topic_view.html"
+
+	var err error
+	this.Data["Topic"], err = models.GetTopic(this.Ctx.Input.Param("0"))
+	if err != nil {
+		beego.Error(err)
+	}
+}
+
+func (this *TopicController) Edit() {
+	this.Data["IsLogin"] = checkAccount(this.Controller)
+	this.Data["IsTopic"] = true
+	this.TplName = "topic_edit.html"
 
 	var err error
 	this.Data["Topic"], err = models.GetTopic(this.Ctx.Input.Param("0"))

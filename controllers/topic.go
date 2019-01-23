@@ -14,6 +14,12 @@ func (this *TopicController) Get() {
 	this.Data["IsLogin"] = checkAccount(this.Controller)
 	this.Data["IsTopic"] = true
 	this.TplName = "topic.html"
+
+	var err error
+	this.Data["TopicList"], err = models.GetTopicList()
+	if err != nil {
+		beego.Error(err)
+	}
 }
 
 func (this *TopicController) Post() {

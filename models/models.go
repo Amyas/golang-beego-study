@@ -140,7 +140,7 @@ func DelCategory(id string) error {
 	return nil
 }
 
-// 获取列表
+// 获取分类列表
 func GetCategoryList() ([]*Category, error) {
 	// 创建一个orm模型
 	o := orm.NewOrm()
@@ -151,4 +151,13 @@ func GetCategoryList() ([]*Category, error) {
 	// 获取所有数据
 	_, err := qs.All(&cates)
 	return cates, err
+}
+
+// 获取文章列表
+func GetTopicList() ([]*Topic, error) {
+	o := orm.NewOrm()
+	topics := make([]*Topic, 0)
+	qs := o.QueryTable("topic")
+	_, err := qs.All(&topics)
+	return topics, err
 }

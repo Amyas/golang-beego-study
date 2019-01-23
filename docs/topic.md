@@ -152,6 +152,33 @@ func AddTopic(title, content string) error {
 ```
 
 ## 获取文章列表
+``` go
+// controllers/topic.go
+
+...
+func (this *TopicController) Get() {
+  ...
+
+	var err error
+	this.Data["TopicList"], err = models.GetTopicList()
+	if err != nil {
+		beego.Error(err)
+	}
+}
+```
+
+``` go
+// models/models.go
+
+...
+func GetTopicList() ([]*Topic, error) {
+	o := orm.NewOrm()
+	topics := make([]*Topic, 0)
+	qs := o.QueryTable("topic")
+	_, err := qs.All(&topics)
+	return topics, err
+}
+```
 
 ## 删除文章
 

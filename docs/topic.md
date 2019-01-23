@@ -83,6 +83,73 @@ func init() {
 文章的新增、编辑与删除我们将使用这种方法
 
 ## 创建文章
+``` html
+<!-- views/topic_add.html -->
+
+...
+  <div class="container" style="margin-top:50px;">
+    <h1>新增文章</h1>
+    <form method="POST" action="/topic">
+      <div class="form-group">
+        <label>文章名称</label>
+        <input type="text" name="title" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>文章内容</label>
+        <textarea name="content" cols="30" rows="10" class="form-control"></textarea>
+      </div>
+      <button class="btn btn-primary">新增文章</button>
+    </form>
+  </div>
+...
+```
+
+``` go
+// controllers/topic.go
+
+...
+
+func (this *TopicController) Post() {
+	input := this.Input()
+
+	title := input.Get("title")
+	content := input.Get("content")
+
+	err := models.AddTopic(title, content)
+	if err != nil {
+		beego.Error(err)
+	}
+
+	this.Redirect("/topic", 301)
+}
+
+func (this *TopicController) Add() {
+	this.Data["IsLogin"] = checkAccount(this.Controller)
+	this.Data["IsTopic"] = true
+	this.TplName = "topic_add.html"
+}
+...
+```
+
+``` go
+// models/models.go
+
+...
+func AddTopic(title, content string) error {
+	o := orm.NewOrm()
+
+	topic := &Topic{
+		Title:     title,
+		Content:   content,
+		Created:   time.Now(),
+		Updated:   time.Now(),
+		ReplyTime: time.Now(),
+	}
+
+	_, err := o.Insert(topic)
+	return err
+}
+```
 
 ## 获取文章列表
 

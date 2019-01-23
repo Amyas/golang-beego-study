@@ -98,6 +98,22 @@ func AddCategory(name string) error {
 	return nil
 }
 
+// 创建文章
+func AddTopic(title, content string) error {
+	o := orm.NewOrm()
+
+	topic := &Topic{
+		Title:     title,
+		Content:   content,
+		Created:   time.Now(),
+		Updated:   time.Now(),
+		ReplyTime: time.Now(),
+	}
+
+	_, err := o.Insert(topic)
+	return err
+}
+
 // 删除分类
 func DelCategory(id string) error {
 	//将id 转化为 int64
